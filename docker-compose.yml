@@ -1,0 +1,52 @@
+version: '3.3'
+
+services:
+    jenkins:
+        container_name: jenkins
+        restart: always
+        ports:
+            - '8080:8080'
+            - '50000:50000'
+        volumes:
+            - '/var/run/docker.sock:/var/run/docker.sock'
+            - '/usr/bin/docker:/usr/bin/docker'
+            - '/usr/local/bin/docker-compose:/usr/local/bin/docker-compose'
+            - '/root/jenkins_home:/var/jenkins_home'
+            - '/root/backups:/var/backups'
+        image: 'jenkins/jenkins:lts'
+        user: root
+        environment:
+            - TZ="Europe/Moscow"
+    mysql:
+        build: mysql/
+        restart: always
+        ports:
+            - '3306:3306'
+        container_name: mysql
+        image: mysql
+    matcha:
+        build: server/
+        restart: always
+        volumes:
+            - '/root/jenkins_home/workspace/Matcha:/matcha'
+        ports:
+            - '443:443'
+        container_name: matcha
+        image: 'matcha:latest'
+    phpmyadmin:
+        container_name: pma
+        restart: always
+        links:
+            - 'mysql:db'
+        ports:
+            - '8081:80'
+        image: phpmyadmin/phpmyadmin
+    nginx-redirect:
+        container_name: nginx_redirect
+        restart: always
+        environment:
+            - SERVER_REDIRECT=matcha.mcdir.ru
+            - SERVER_REDIRECT_SCHEME=https
+        ports:
+            - '80:80'
+        image: schmunk42/nginx-redirect

@@ -1,0 +1,40 @@
+{% extends "layout.html" %}
+{% block content %}
+	<section id="chat-list">
+		<div class="container chat-list">
+			<div class="row">
+				<div class="col"><h2>Chat List</h2></div>
+			</div>
+			<div class="row">
+				<div class="col-12">
+					<div class="list-group">
+						{% if chats %}
+							{% for chat in chats %}
+								{% set second_user = chat.second_user %}
+								<a href="%% url_for('chat_page', user_id=second_user.id) %%"
+								   class="list-group-item text-light">
+									<div class="col-4 d-sm-flex align-items-center">
+										<img src="%% second_user.avatar %%" alt="Matcha"
+											 class="img-fluid img-round mr-2">
+										<code>%% second_user.login %%</code>
+									</div>
+									<p class=" text-truncate mb-0 col-4">%% chat.message %%</p>
+									<span class="timestamp col-4 text-right text-info">
+										%% chat.timestamp %%
+									</span>
+								</a>
+							{% endfor %}
+						{% else %}
+							<p class="text-secondary text-center">
+								You don't have any chats...
+							</p>
+							<a href="%% url_for('index') %%" class="btn btn-primary">
+								Return to the main page.
+							</a>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
